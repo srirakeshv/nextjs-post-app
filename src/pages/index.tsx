@@ -6,7 +6,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { AgGridReact } from "ag-grid-react";
 import { fetchProduct } from "./api/productApi";
-import { useState } from "react";
+import { act, useState } from "react";
 import { AllCommunityModule, ColDef, ModuleRegistry } from "ag-grid-community";
 import PostForm from "@/Components/PostForm/PostForm";
 
@@ -15,6 +15,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 
 export default function Home() {
   const [editPost, setEditPost] = useState(null);
+  const [active, setActive] = useState(false); //for active state
 
   //recent id component with new text
   const recentId = (params) => {
@@ -56,7 +57,14 @@ export default function Home() {
     {
       field: "edit",
       cellRenderer: (params) => (
-        <button onClick={() => setEditPost(params.data)}>Edit</button>
+        <button
+          onClick={() => {
+            setEditPost(params.data);
+            setActive(true);
+          }}
+        >
+          Edit
+        </button>
       ),
     },
     { field: "delete", cellRenderer: () => <button>Delete</button> },
@@ -81,7 +89,8 @@ export default function Home() {
             paginationPageSize={11}
           />
         )}
-        <PostForm editPost={editPost} setEditPost={setEditPost} />
+        <button className="plus">+</button>
+        {active && <PostForm editPost={editPost} setEditPost={setEditPost} />}
       </div>
     </>
   );

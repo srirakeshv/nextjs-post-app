@@ -6,7 +6,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { AgGridReact } from "ag-grid-react";
 import { fetchProduct } from "./api/productApi";
-import { act, useState } from "react";
+import { act, useMemo, useState } from "react";
 import { AllCommunityModule, ColDef, ModuleRegistry } from "ag-grid-community";
 import PostForm from "@/Components/PostForm/PostForm";
 
@@ -62,22 +62,29 @@ export default function Home() {
             setEditPost(params.data);
             setActive(true);
           }}
+          className="edit"
         >
           Edit
         </button>
       ),
     },
-    { field: "delete", cellRenderer: () => <button>Delete</button> },
+    {
+      field: "delete",
+      cellRenderer: () => <button className="delete">Delete</button>,
+    },
   ]);
 
   //setting default column definitions
-  const defaultColDef = {
-    flex: 1, // Flex property to make columns responsive
-  };
+  const defaultColDef = useMemo(
+    () => ({
+      flex: 1, // Flex property to make columns responsive
+    }),
+    []
+  );
 
   return (
     <>
-      <div style={{ height: 500 }}>
+      <div className="maincontainer" style={{ height: 500 }}>
         {isLoading && <p>Loading...</p>}
         {isError && <p>{error.message}</p>}
         {data && data.length > 0 && (
@@ -89,8 +96,16 @@ export default function Home() {
             paginationPageSize={11}
           />
         )}
-        <button className="plus">+</button>
-        {active && <PostForm editPost={editPost} setEditPost={setEditPost} />}
+        <button className="plus" onClick={() => setActive(true)}>
+          +
+        </button>
+        {active && (
+          <PostForm
+            editPost={editPost}
+            setEditPost={setEditPost}
+            setActive={setActive}
+          />
+        )}
       </div>
     </>
   );
